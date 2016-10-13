@@ -2,9 +2,9 @@ package com.secretbiology.dppmanager;
 
 public class Device {
 	
-	String label;
-	String moduleName;
-	String deviceName;
+	private String label;
+	private String moduleName;
+	private String deviceName;
 
 	public Device() {
 		// TODO Auto-generated constructor stub

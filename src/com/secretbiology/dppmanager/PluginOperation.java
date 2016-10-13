@@ -1,15 +1,19 @@
 package com.secretbiology.dppmanager;
 
+import javax.swing.JOptionPane;
+
 import org.micromanager.api.ScriptInterface;
 
 import ij.ImagePlus;
 import ij.io.FileSaver;
+import ij.process.ByteProcessor;
+import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import mmcorej.CMMCore;
 
 public class PluginOperation {
 	private CMMCore core = new CMMCore();
-	private PluginSetupe s = new PluginSetupe();
+	Device shutter, camera, wheel;
 	int IMAGE_NO = 1;
 
 	int RED_LIGHT = 4;
@@ -18,33 +22,32 @@ public class PluginOperation {
 
 	public PluginOperation(ScriptInterface app, PluginSetupe s) {
 		core = app.getMMCore();
-
+		InitialSetupe i = s.getDeviceSetupe();
+		shutter = i.getShutter();
+		camera = i.getCamera();
+		wheel = i.getShutterWheel();
 		try {
-			// core.loadDevice("COM6", "SerialManager", "COM6");
-			// core.loadDevice("LudlController", "Ludl", "LudlController");
-			// core.loadDevice("LudlWheel", "Ludl", "LudlWheel");
-			// core.loadDevice("LudlShutter", "Ludl", "LudlShutter");
-			// core.loadDevice("Camera", "PVCAM", "Camera-1");
-			//
-			// core.setProperty("LudlController", "Port", "COM6");
-			// core.setProperty("LudlWheel", "Fiter Positions", "6");
-			// core.setProperty("LudlWheel", "Home-Timeout-(s)", "10.0000");
-			// core.setProperty("LudlWheel", "LudlDeviceNumberWheel", "1");
-			// core.setProperty("LudlWheel", "LudlWheelNumber", "2");
-			// core.setProperty("LudlShutter", "LudlDeviceNumberShutter", "1");
-			// core.setProperty("LudlShutter", "LudlShutterNumber", "2");
+			for (Device d : i.getDefaultDevice()) {
+				core.loadDevice(d.getLabel(), d.getModuleName(), d.getDeviceName());
+			}
+			// Always load properties AFTER loading device
 
-			core.loadDevice("Camera", "DemoCamera", "DCam");
-			core.loadDevice("Emission", "DemoCamera", "DWheel");
-			core.loadDevice("Shutter", "DemoCamera", "DShutter");
+			for (DeviceProperty p : i.getDefaultProperties()) {
+				core.setProperty(p.getDevice().getLabel(), p.getPropName(), p.getPropValue());
+			}
 
 			core.initializeAllDevices();
 			core.setAutoShutter(false); // disable auto shutter
-			// core.setProperty("LudlShutter", "State", "1"); // open
-			// core.waitForDevice("LudlShutter");
+			core.setProperty(shutter.getLabel(), "State", "1");
+			core.waitForDevice(shutter.getLabel());
+			
+			exposeAndCapture(RED_LIGHT, 1000);
+			exposeAndCapture(BLUE_LIGHT, 1000);
+			exposeAndCapture(NO_LIGHT, 1000);
 
-			core.setProperty("Shutter", "State", "1");
-
+			core.setProperty(shutter.getLabel(), "State", "0");
+			JOptionPane.showConfirmDialog(null, "Analysis is comeplete", "DPPmanager 1.0", JOptionPane.OK_CANCEL_OPTION,
+					JOptionPane.PLAIN_MESSAGE);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -60,7 +63,13 @@ public class PluginOperation {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		ShortProcessor im = new ShortProcessor((int) core.getImageWidth(), (int) core.getImageHeight());
+		long byteDepth = core.getBytesPerPixel();
+		ImageProcessor im;
+		if (byteDepth == 1) {
+			im = new ByteProcessor((int) core.getImageWidth(), (int) core.getImageHeight());
+		} else {
+			im = new ShortProcessor((int) core.getImageWidth(), (int) core.getImageHeight());
+		}
 		try {
 			im.setPixels(core.getImage());
 			ImagePlus imp = new ImagePlus(ImageName, im);
@@ -77,19 +86,18 @@ public class PluginOperation {
 		try {
 
 			if (light != NO_LIGHT) {
-
-				core.setState("LudlWheel", light);
+				core.setState(wheel.getLabel(), light);
 				core.sleep(time);
 				if (light != RED_LIGHT) {
 					capture(IMAGE_NO);
 					IMAGE_NO = IMAGE_NO + 1;
 				}
 			} else {
-				core.setProperty("LudlShutter", "State", "0"); // Close
-				core.waitForDevice("LudlShutter");
+				core.setProperty(shutter.getLabel(), "State", "0"); // Close
+				core.waitForDevice(shutter.getLabel());
 				core.sleep(time);
-				core.setProperty("LudlShutter", "State", "1"); // Close
-				core.waitForDevice("LudlShutter");
+				core.setProperty(shutter.getLabel(), "State", "1"); // Close
+				core.waitForDevice(shutter.getLabel());
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

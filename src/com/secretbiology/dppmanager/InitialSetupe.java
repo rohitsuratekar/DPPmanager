@@ -15,16 +15,16 @@ public class InitialSetupe {
 	
 	public List<DeviceProperty> getDefaultProperties() {
 		List<DeviceProperty> allDevicesProp = new ArrayList<DeviceProperty>();
-		allDevicesProp.add(new DeviceProperty(getShutterWheel(), "Filter Positions", "6"));
-		allDevicesProp.add(new DeviceProperty(getShutterWheel(), "Home-Timeout-(s)", "10.0000"));
-		allDevicesProp.add(new DeviceProperty(getShutterWheel(), "LudlDeviceNumberWheel", "1"));
-		allDevicesProp.add(new DeviceProperty(getShutterWheel(), "LudlWheelNumber", "2"));
-		allDevicesProp.add(new DeviceProperty(getShutter(), "LudlDeviceNumberShutter", "1"));
-		allDevicesProp.add(new DeviceProperty(getShutter(), "LudlShutterNumber", "2"));
+//		allDevicesProp.add(new DeviceProperty(getShutterWheel(), "Filter Positions", "6"));
+//		allDevicesProp.add(new DeviceProperty(getShutterWheel(), "Home-Timeout-(s)", "10.0000"));
+//		allDevicesProp.add(new DeviceProperty(getShutterWheel(), "LudlDeviceNumberWheel", "1"));
+//		allDevicesProp.add(new DeviceProperty(getShutterWheel(), "LudlWheelNumber", "2"));
+//		allDevicesProp.add(new DeviceProperty(getShutter(), "LudlDeviceNumberShutter", "1"));
+//		allDevicesProp.add(new DeviceProperty(getShutter(), "LudlShutterNumber", "2"));
 		return allDevicesProp;
 	}
 
-	private Device getCamera() {
+	public Device getCamera() {
 		Device cam = new Device();
 //		cam.setLabel("Camera");
 //		cam.setModuleName("PVCAM");
@@ -35,7 +35,7 @@ public class InitialSetupe {
 		return cam;
 	}
 	
-	private Device getShutter() {
+	public Device getShutter() {
 		Device shutter = new Device();
 //		shutter.setLabel("LudlShutter");
 //		shutter.setModuleName("Ludl");
@@ -46,7 +46,7 @@ public class InitialSetupe {
 		return shutter;
 	}
 	
-	private Device getShutterWheel() {
+	public Device getShutterWheel() {
 		Device shutterWheel = new Device();
 //		shutterWheel.setLabel("LudlWheel");
 //		shutterWheel.setModuleName("Ludl");
@@ -56,6 +56,7 @@ public class InitialSetupe {
 		shutterWheel.setDeviceName("DWheel");
 		return shutterWheel;
 	}
+
 
 	
 	

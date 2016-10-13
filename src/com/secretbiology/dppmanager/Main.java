@@ -9,7 +9,8 @@ public class Main implements MMPlugin {
 
 	@Override
 	public void setApp(ScriptInterface app) {
-		new APPWindow().run(app);
+		//new APPWindow().run(app);
+		new ProgressWindow().show(app);
 
 	}
 

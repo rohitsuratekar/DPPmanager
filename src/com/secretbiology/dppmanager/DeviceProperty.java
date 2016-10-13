@@ -2,9 +2,9 @@ package com.secretbiology.dppmanager;
 
 public class DeviceProperty {
 
-	Device device;
-	String propName;
-	String propValue;
+	private Device device;
+	private String propName;
+	private String propValue;
 	
 	public DeviceProperty(Device device, String propName, String propValue) {
 		super();

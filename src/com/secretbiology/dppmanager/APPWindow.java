@@ -1,44 +1,23 @@
 package com.secretbiology.dppmanager;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JButton;
-import java.awt.BorderLayout;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-
-import org.micromanager.api.ScriptInterface;
-
-import mmcorej.CMMCore;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import javax.swing.JPopupMenu;
-import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.JFormattedTextField;
-import java.awt.GridLayout;
-import javax.swing.JTextField;
-import javax.swing.JSplitPane;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import java.awt.Rectangle;
-import javax.swing.JDesktopPane;
-import javax.swing.JFileChooser;
-import javax.swing.BoxLayout;
-import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.Button;
-import javax.swing.JTree;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+import org.micromanager.api.ScriptInterface;
 
 public class APPWindow {
 
@@ -91,27 +70,23 @@ public class APPWindow {
 						exposure = Integer.parseInt(exposureText.getText());
 						gapTime = Integer.parseInt(gapTimeText.getText());
 						redAdaptationTime = Integer.parseInt(redAdaptation.getText());
-						if(exposure<1 || gapTime <0 || redAdaptationTime<0){
+						if (exposure < 1 || gapTime < 0 || redAdaptationTime < 0) {
 							JOptionPane.showMessageDialog(null, "Time can not be negative or exposure can not be zero");
-						}
-						else{
+						} else {
+							//frame.setVisible(false);
 							PluginSetupe s = new PluginSetupe();
 							s.setExposure(exposure);
 							s.setGapTime(gapTime);
 							s.setInitialAdaptation(redAdaptationTime);
-							InitialSetupe i = new InitialSetupe();
-							s.setDeviceList(i.getDefaultDevice());
-							s.setInitialProperties(i.getDefaultProperties());
+							s.setDeviceSetupe(new InitialSetupe());
 							new PluginOperation(app, s);
-							btnNewButton.setEnabled(false);
-							btnNewButton.setText("running...");
 						}
-						
+
 					} catch (Exception e2) {
 						JOptionPane.showMessageDialog(null, "Time should be integer");
 					}
 
-					// 
+					//
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -174,17 +149,17 @@ public class APPWindow {
 		gapTimeText.setHorizontalAlignment(SwingConstants.CENTER);
 		gapTimeText.setBounds(305, 138, 108, 29);
 		frame.getContentPane().add(gapTimeText);
-		
+
 		JLabel lblOutputFolder = new JLabel("Output Folder");
 		lblOutputFolder.setBorder(new EmptyBorder(10, 10, 10, 10));
 		lblOutputFolder.setBounds(15, 193, 131, 29);
 		frame.getContentPane().add(lblOutputFolder);
-		
+
 		textField = new JTextField();
 		textField.setBounds(15, 223, 273, 26);
 		frame.getContentPane().add(textField);
 		textField.setColumns(10);
-		
+
 		final JFileChooser f = new JFileChooser();
 		f.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		f.setCurrentDirectory(new java.io.File("."));
@@ -194,13 +169,32 @@ public class APPWindow {
 		btnSelect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				int v = f.showOpenDialog(btnSelect);
-				if(v == JFileChooser.APPROVE_OPTION){
+				if (v == JFileChooser.APPROVE_OPTION) {
 					textField.setText(f.getCurrentDirectory().getPath());
-					System.out.println("Selceted ===="+ f.getCurrentDirectory());
+					System.out.println("Selceted ====" + f.getCurrentDirectory());
 				}
 			}
 		});
 		btnSelect.setBounds(305, 222, 98, 29);
 		frame.getContentPane().add(btnSelect);
+	}
+	
+	private void startProgress() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 450, 388);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+
+		JButton btnAbort = new JButton("Abort");
+		btnAbort.setBounds(170, 287, 115, 29);
+		frame.getContentPane().add(btnAbort);
+
+		JLabel lblTimeRemaining = new JLabel("Time Remaining");
+		lblTimeRemaining.setBounds(15, 50, 151, 20);
+		frame.getContentPane().add(lblTimeRemaining);
+
+		JLabel lblSec = new JLabel("0 sec");
+		lblSec.setBounds(260, 50, 69, 20);
+		frame.getContentPane().add(lblSec);
 	}
 }
